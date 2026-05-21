@@ -1,4 +1,5 @@
 .env
+copilot-aap-agent/.env
 creds.md
 group_vars/all.yml
 .venv/

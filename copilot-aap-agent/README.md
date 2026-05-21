@@ -40,7 +40,16 @@ You → Copilot SDK (local) → HTTP MCP → AAP on OpenShift (RHPDS)
    # Set AAP_GATEWAY_TOKEN=... in .env
    ```
 
-## Run
+## Setup and test
+
+```bash
+./scripts/setup-copilot-aap-agent.sh   # pip install + .env with Gateway token
+python3 copilot-aap-agent/test_mcp_session.py
+```
+
+`test_mcp_session.py` checks (1) direct MCP `tools/list`, (2) Copilot SDK session accepts the HTTP MCP server. Step 3 (chat) needs **GitHub Copilot Enterprise** or **Azure BYOM** in `.env`.
+
+## Run chat
 
 ```bash
 source scripts/workshop-env.sh   # optional: NO_PROXY for workshop hosts
