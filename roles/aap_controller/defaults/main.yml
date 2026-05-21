@@ -36,7 +36,7 @@ aap_azure_fedora_job_template_name: "Azure VM + Foundry Alerts"
 aap_azure_fedora_job_template_description: >-
   Deploy Azure Linux VM, Function alert bridge, and Monitor metric rule
   (playbooks/azure-fedora-alerts.yml). Requires az login on the execution node.
-aap_azure_fedora_project_name: aap-azure-ai-foundry
+aap_azure_fedora_project_name: aap-azure-copilot
 aap_azure_fedora_project_id: 0
 aap_azure_fedora_inventory_id: 3
 aap_azure_fedora_playbook: playbooks/azure-fedora-alerts.yml
@@ -51,7 +51,7 @@ aap_azure_rhel_job_template_name: "Azure RG + RHEL BYOS Server"
 aap_azure_rhel_job_template_description: >-
   Create Azure resource group and RHEL BYOS VM (azure.azcollection,
   license_type RHEL_BYOS). Playbook playbooks/azure-rhel-byol-server.yml.
-aap_azure_rhel_project_name: aap-azure-ai-foundry
+aap_azure_rhel_project_name: aap-azure-copilot
 aap_azure_rhel_project_id: 0
 aap_azure_rhel_inventory_id: 3
 aap_azure_rhel_playbook: playbooks/azure-rhel-byol-server.yml
@@ -67,7 +67,7 @@ aap_cisco_snmp_job_template_name: "Cisco SNMP compliance check"
 aap_cisco_snmp_job_template_description: >-
   Compare Cisco IOS SNMP settings to files/cisco_snmp_expected.cfg
   (playbooks/cisco-snmp-compliance.yml). Requires network inventory + credential.
-aap_cisco_snmp_project_name: aap-azure-ai-foundry
+aap_cisco_snmp_project_name: aap-azure-copilot
 aap_cisco_snmp_project_id: 0
 aap_cisco_snmp_inventory_id: 3
 aap_cisco_snmp_playbook: playbooks/cisco-snmp-compliance.yml

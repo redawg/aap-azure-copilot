@@ -1,4 +1,6 @@
-# Azure AI Foundry + Ansible MCP
+# Azure Copilot + Ansible MCP (aap-azure-copilot)
+
+GitHub: [redawg/aap-azure-copilot](https://github.com/redawg/aap-azure-copilot)
 
 Register an **already-deployed** Ansible Automation Platform MCP server with [Azure AI Foundry Agent Service](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/model-context-protocol).
 
@@ -158,7 +160,7 @@ ansible-playbook playbooks/aap-create-azure-fedora-template.yml -e @group_vars/a
 # or: ./scripts/aap-create-azure-fedora-template.sh
 ```
 
-Creates template **Azure VM + Foundry Alerts** on project `aap-azure-ai-foundry`, playbook `playbooks/azure-fedora-alerts.yml`, inventory `foundry-local` (localhost). Default extra vars: [`config/azure_fedora_job_template_extra_vars.yml`](config/azure_fedora_job_template_extra_vars.yml).
+Creates template **Azure VM + Foundry Alerts** on project `aap-azure-copilot`, playbook `playbooks/azure-fedora-alerts.yml`, inventory `foundry-local` (localhost). Default extra vars: [`config/azure_fedora_job_template_extra_vars.yml`](config/azure_fedora_job_template_extra_vars.yml).
 
 Flow: **Metric alert** → **Action group webhook** → **Function `AlertToFoundry`** → **Foundry agent** (recommends AAP job template from alert JSON).
 

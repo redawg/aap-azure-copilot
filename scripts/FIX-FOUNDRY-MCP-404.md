@@ -41,7 +41,7 @@ Delete the bad row, add a new custom key with name **`Authorization`** and value
 ### 1. Create a Gateway token
 
 ```bash
-AAP_PASSWORD='…' ~/aap-azure-ai-foundry/scripts/create-aap-gateway-token.sh
+AAP_PASSWORD='…' ~/aap-azure-copilot/scripts/create-aap-gateway-token.sh
 ```
 
 Copy the token (single line, no spaces).

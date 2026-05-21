@@ -28,7 +28,7 @@
       - aap_azure_fedora_project_id | int > 0
     fail_msg: >-
       Project '{{ aap_azure_fedora_project_name }}' not found. Sync the
-      aap-azure-ai-foundry project on Controller first.
+      aap-azure-copilot project on Controller first.
 
 - name: aap_controller | Search existing Azure Fedora job template
   ansible.builtin.uri:
