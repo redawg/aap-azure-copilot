@@ -1,0 +1,84 @@
+---
+# Job templates to create/update on AAP Controller (project: aap-azure-copilot).
+# Applied by: playbooks/aap-create-all-job-templates.yml
+
+aap_job_templates_manifest:
+  - name: Verify AAP and MCP connectivity
+    playbook: playbooks/verify.yml
+    description: >-
+      Verify workshop AAP Controller API, MCP Bearer session, optional OpenShift MCP routes.
+
+  - name: Register Foundry MCP agent
+    playbook: playbooks/site.yml
+    description: >-
+      Register AAP MCP with Azure AI Foundry (Gateway token, connection, agent). Requires az login.
+
+  - name: Create AAP Gateway MCP token
+    playbook: playbooks/create-gateway-token.yml
+    description: Mint Gateway Bearer token for MCP clients (Cursor, Copilot Studio).
+
+  - name: Update Foundry agent instructions
+    playbook: playbooks/update-agent-instructions.yml
+    description: Publish Azure alert → job template mapping to Foundry agent instructions.
+
+  - name: Cleanup Foundry MCP registration
+    playbook: playbooks/cleanup-foundry.yml
+    description: Remove Foundry agents, MCP connection, optional extra projects.
+
+  - name: Redeploy Foundry MCP registration
+    playbook: playbooks/redeploy.yml
+    description: cleanup-foundry.yml then site.yml.
+
+  - name: Sync GitHub projects to AAP
+    playbook: playbooks/sync-github-projects.yml
+    description: Sync redawg GitHub repos into Controller SCM projects (API fallback).
+
+  - name: Create AAP project from SCM
+    playbook: playbooks/aap-create-project.yml
+    description: Create one Controller project (set aap_project_name and aap_project_scm_url at launch).
+    ask_variables_on_launch: true
+
+  - name: Install local workshop tools (oc)
+    playbook: playbooks/install-local-tools.yml
+    description: Install oc/kubectl to ~/bin on the execution node.
+
+  - name: OpenShift MCP routes
+    playbook: playbooks/openshift-mcp-routes.yml
+    description: List AnsibleMCPServer CRs and MCP routes (requires ocp_token).
+
+  - name: Provision AAP Analytics
+    playbook: playbooks/provision-aap-analytics.yml
+    description: Enable MetricsService and metrics-utility on workshop OpenShift AAP 2.6.
+
+  - name: Red Hat Galaxy credential
+    playbook: playbooks/aap-redhat-galaxy-credential.yml
+    description: Configure Automation Hub Galaxy credential on Controller (pass aap_galaxy_api_token at launch).
+    ask_variables_on_launch: true
+
+  - name: Red Hat Analytics service account
+    playbook: playbooks/aap-redhat-analytics-service-account.yml
+    description: Configure Analytics service account credential on Controller.
+    ask_variables_on_launch: true
+
+  - name: Azure VM + Foundry Alerts
+    playbook: playbooks/azure-fedora-alerts.yml
+    description: Deploy Azure Fedora VM, Monitor alert, Function → Foundry agent webhook.
+    ask_variables_on_launch: true
+    extra_vars_file: config/azure_fedora_job_template_extra_vars.yml
+    extra_vars_key: aap_azure_fedora_default_extra_vars
+
+  - name: Azure RG + RHEL BYOS Server
+    playbook: playbooks/azure-rhel-byol-server.yml
+    description: Create Azure resource group and RHEL BYOS VM (license_type RHEL_BYOS).
+    ask_variables_on_launch: true
+    extra_vars_file: config/azure_rhel_byol_job_template_extra_vars.yml
+    extra_vars_key: aap_azure_rhel_byol_default_extra_vars
+
+  - name: Cisco SNMP compliance check
+    playbook: playbooks/cisco-snmp-compliance.yml
+    description: Compare Cisco IOS SNMP settings to files/cisco_snmp_expected.cfg.
+    ask_variables_on_launch: true
+    ask_inventory_on_launch: true
+    ask_credential_on_launch: true
+    extra_vars_file: config/cisco_snmp_job_template_extra_vars.yml
+    extra_vars_key: cisco_snmp_default_extra_vars

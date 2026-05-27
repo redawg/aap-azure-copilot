@@ -1,0 +1,72 @@
+---
+- name: aap_controller | Resolve default project id for job templates
+  when: aap_jt_default_project_id | int == 0
+  ansible.builtin.uri:
+    url: >-
+      {{ aap_base_url }}/api/controller/v2/projects/?search={{
+      aap_jt_default_project_name | urlencode }}&page_size=20
+    method: GET
+    validate_certs: "{{ foundry_validate_certs }}"
+    force_basic_auth: true
+    url_username: "{{ aap_user }}"
+    url_password: "{{ aap_password }}"
+    status_code: 200
+  register: aap_jt_project_search
+  changed_when: false
+
+- name: aap_controller | Set default project id from search
+  when: aap_jt_default_project_id | int == 0
+  ansible.builtin.set_fact:
+    aap_jt_default_project_id: >-
+      {{
+        (
+          aap_jt_project_search.json.results
+          | selectattr('name', 'equalto', aap_jt_default_project_name)
+          | map(attribute='id')
+          | list
+          | first
+          | default(0)
+        )
+      }}
+
+- name: aap_controller | Require SCM project for job templates
+  ansible.builtin.assert:
+    that:
+      - aap_jt_default_project_id | int > 0
+    fail_msg: >-
+      Project '{{ aap_jt_default_project_name }}' not found on Controller.
+      Run ./scripts/aap-ask.sh sync-github-projects first.
+
+- name: aap_controller | Sync SCM project before creating job templates
+  ansible.builtin.include_tasks: start-project-sync-api.yml
+  vars:
+    aap_project_id: "{{ aap_jt_default_project_id }}"
+
+- name: aap_controller | Wait for SCM project sync to finish
+  ansible.builtin.uri:
+    url: "{{ aap_base_url }}/api/controller/v2/projects/{{ aap_jt_default_project_id }}/"
+    method: GET
+    validate_certs: "{{ foundry_validate_certs }}"
+    force_basic_auth: true
+    url_username: "{{ aap_user }}"
+    url_password: "{{ aap_password }}"
+    status_code: 200
+  register: aap_jt_project_status
+  until: aap_jt_project_status.json.status | default('') in ['successful', 'ok']
+  retries: 36
+  delay: 10
+  changed_when: false
+
+- name: aap_controller | Create or update job templates from manifest
+  ansible.builtin.include_tasks: create-single-job-template.yml
+  loop: "{{ aap_job_templates_manifest }}"
+  loop_control:
+    loop_var: jt_item
+    label: "{{ jt_item.name }}"
+
+- name: aap_controller | Job templates manifest summary
+  ansible.builtin.debug:
+    msg:
+      - "Project: {{ aap_jt_default_project_name }} (id {{ aap_jt_default_project_id }})"
+      - "Templates ensured: {{ aap_job_templates_manifest | map(attribute='name') | list | join(', ') }}"
+      - "Portal: {{ aap_base_url }} → Templates"

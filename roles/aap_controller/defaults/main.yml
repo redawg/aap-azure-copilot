@@ -76,3 +76,8 @@ aap_cisco_snmp_credential_id: 0
 aap_cisco_snmp_ask_variables_on_launch: true
 aap_cisco_snmp_ask_inventory_on_launch: true
 aap_cisco_snmp_job_template_id: ""
+
+# Bulk job templates (config/job_templates_manifest.yml)
+aap_jt_default_project_name: aap-azure-copilot
+aap_jt_default_project_id: 0
+aap_jt_default_inventory_id: 3

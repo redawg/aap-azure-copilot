@@ -1,0 +1,113 @@
+---
+- name: aap_controller | Load extra_vars file for {{ jt_item.name }}
+  when: jt_item.extra_vars_file is defined
+  ansible.builtin.include_vars:
+    file: "{{ repo_root }}/{{ jt_item.extra_vars_file }}"
+
+- name: aap_controller | Resolve extra_vars for {{ jt_item.name }}
+  ansible.builtin.set_fact:
+    aap_jt_extra_vars_yaml: >-
+      {{
+        (
+          jt_item.extra_vars | default({})
+          | combine(
+              lookup('vars', jt_item.extra_vars_key)
+              if (jt_item.extra_vars_key is defined and jt_item.extra_vars_key | length > 0)
+              else {}
+            )
+        )
+        | to_nice_yaml
+        if (
+          jt_item.extra_vars is defined
+          or (jt_item.extra_vars_key is defined and jt_item.extra_vars_key | length > 0)
+        )
+        else ''
+      }}
+
+- name: aap_controller | Search job template {{ jt_item.name }}
+  ansible.builtin.uri:
+    url: >-
+      {{ aap_base_url }}/api/controller/v2/job_templates/?search={{
+      jt_item.name | urlencode }}&page_size=20
+    method: GET
+    validate_certs: "{{ foundry_validate_certs }}"
+    force_basic_auth: true
+    url_username: "{{ aap_user }}"
+    url_password: "{{ aap_password }}"
+    status_code: 200
+  register: aap_jt_search
+  changed_when: false
+
+- name: aap_controller | Pick matching job template {{ jt_item.name }}
+  ansible.builtin.set_fact:
+    aap_jt_match: >-
+      {{
+        (
+          aap_jt_search.json.results
+          | selectattr('name', 'equalto', jt_item.name)
+          | list
+          | first
+          | default({}, true)
+        )
+      }}
+
+- name: aap_controller | Build job template body for {{ jt_item.name }}
+  ansible.builtin.set_fact:
+    aap_jt_body: >-
+      {{
+        {
+          'name': jt_item.name,
+          'description': jt_item.description | default(''),
+          'job_type': 'run',
+          'organization': aap_organization_id | int,
+          'project': (jt_item.project_id | default(aap_jt_default_project_id)) | int,
+          'inventory': (jt_item.inventory_id | default(aap_jt_default_inventory_id)) | int,
+          'playbook': jt_item.playbook,
+          'become_enabled': jt_item.become_enabled | default(false),
+          'ask_variables_on_launch': jt_item.ask_variables_on_launch | default(false),
+          'ask_inventory_on_launch': jt_item.ask_inventory_on_launch | default(false),
+          'ask_credential_on_launch': jt_item.ask_credential_on_launch | default(false),
+        }
+        | combine({'extra_vars': aap_jt_extra_vars_yaml} if aap_jt_extra_vars_yaml | length > 0 else {})
+        | combine(
+            {'execution_environment': jt_item.execution_environment_id | int}
+            if (jt_item.execution_environment_id | default(0) | int) > 0
+            else {}
+          )
+      }}
+
+- name: aap_controller | Create job template {{ jt_item.name }}
+  when: aap_jt_match.id is not defined
+  ansible.builtin.uri:
+    url: "{{ aap_base_url }}/api/controller/v2/job_templates/"
+    method: POST
+    validate_certs: "{{ foundry_validate_certs }}"
+    force_basic_auth: true
+    url_username: "{{ aap_user }}"
+    url_password: "{{ aap_password }}"
+    body_format: json
+    body: "{{ aap_jt_body }}"
+    status_code: 201
+  register: aap_jt_create
+
+- name: aap_controller | Update job template {{ jt_item.name }}
+  when: aap_jt_match.id is defined
+  ansible.builtin.uri:
+    url: "{{ aap_base_url }}/api/controller/v2/job_templates/{{ aap_jt_match.id }}/"
+    method: PATCH
+    validate_certs: "{{ foundry_validate_certs }}"
+    force_basic_auth: true
+    url_username: "{{ aap_user }}"
+    url_password: "{{ aap_password }}"
+    body_format: json
+    body: "{{ aap_jt_body }}"
+    status_code: 200
+  register: aap_jt_update
+
+- name: aap_controller | Record job template id for {{ jt_item.name }}
+  ansible.builtin.set_fact:
+    aap_jt_result_id: "{{ aap_jt_create.json.id if aap_jt_match.id is not defined else aap_jt_match.id }}"
+
+- name: aap_controller | Job template {{ jt_item.name }} ready
+  ansible.builtin.debug:
+    msg: "id={{ aap_jt_result_id }} playbook={{ jt_item.playbook }}"

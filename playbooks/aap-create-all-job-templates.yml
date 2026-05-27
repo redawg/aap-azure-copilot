@@ -1,0 +1,18 @@
+---
+# Create or update Controller job templates for playbooks in config/job_templates_manifest.yml
+#
+#   ansible-playbook playbooks/aap-create-all-job-templates.yml -e @group_vars/all.yml
+#   ./scripts/aap-create-all-job-templates.sh
+#
+- name: Create AAP job templates from playbook manifest
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir | dirname }}"
+    aap_controller_action: create-job-templates-from-manifest
+  vars_files:
+    - "{{ playbook_dir | dirname }}/config/job_templates_manifest.yml"
+
+  roles:
+    - role: aap_controller

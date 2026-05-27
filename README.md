@@ -94,6 +94,7 @@ Workshop Foundry project endpoint (example):
 | [`playbooks/list-recent-jobs.yml`](playbooks/list-recent-jobs.yml) | Recent unified jobs |
 | [`playbooks/launch-job-template.yml`](playbooks/launch-job-template.yml) | Launch template by ID |
 | [`playbooks/mcp-list-job-templates.yml`](playbooks/mcp-list-job-templates.yml) | Templates via MCP |
+| [`playbooks/aap-create-all-job-templates.yml`](playbooks/aap-create-all-job-templates.yml) | Create/update all templates from [`config/job_templates_manifest.yml`](config/job_templates_manifest.yml) |
 | [`playbooks/openshift-mcp-routes.yml`](playbooks/openshift-mcp-routes.yml) | `oc` MCP CRs and routes |
 | [`playbooks/provision-aap-analytics.yml`](playbooks/provision-aap-analytics.yml) | AAP 2.6 MetricsService + controller metrics-utility on OpenShift |
 | [`playbooks/aap-ask.yml`](playbooks/aap-ask.yml) | MCP-first operations with ansible-navigator fallback |
