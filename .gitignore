@@ -1,5 +1,6 @@
 .env
 copilot-aap-agent/.env
+copilotstudio/copilot-studio-token.txt
 creds.md
 group_vars/all.yml
 .venv/

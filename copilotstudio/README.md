@@ -14,7 +14,13 @@ Upstream: [ansible-tmm/mcp-demo copilotstudio-mcp-setup](https://github.com/ansi
 
 - [Microsoft Copilot Studio](https://copilotstudio.microsoft.com) license
 - [Power Apps](https://make.powerapps.com) access
-- AAP **Gateway token**: `ansible-playbook playbooks/create-gateway-token.yml -e @group_vars/all.yml`
+- AAP **Gateway token** for Copilot Studio:
+
+  ```bash
+  ./scripts/create-copilot-studio-token.sh
+  ```
+
+  Token is written to **`copilotstudio/copilot-studio-token.txt`** (gitignored). Description on AAP: `microsoft-copilot-studio`.
 - Workshop MCP must be reachable from Azure with a **trusted TLS certificate** (Copilot Studio rejects self-signed certs)
 
 ## Setup
